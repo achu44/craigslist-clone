@@ -24,7 +24,7 @@ Two consequences follow from this and should shape every tradeoff:
 ## 2. Technology Stack
 
 - The system shall use Python 3.12+ with type hints on all function signatures.
-- The system shall use Django 5.x as the web framework.
+- The system shall use Django 6.x as the web framework.
 - The system shall use PostgreSQL 16+ as the sole datastore.
 - The system shall use HTMX for interactivity; the system shall not introduce React,
   Vue, or any client-side SPA framework.
