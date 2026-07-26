@@ -132,6 +132,9 @@ Fields: `posting` (FK), `reason`, `reporter_fingerprint`, `created_at`.
   the interval rule in §5.4.
 - WHILE a posting is `BLOCKED` THE system SHALL reject all poster-initiated transitions,
   including delete and renew.
+- WHILE a posting is not `ACTIVE`, THE system SHALL treat unauthenticated public lookup
+  by `public_id` identically to a nonexistent posting; this does not affect poster access
+  via the manage token.
 
 ### 5.4 Unwanted Behavior
 
@@ -149,6 +152,8 @@ Fields: `posting` (FK), `reason`, `reporter_fingerprint`, `created_at`.
   system SHALL raise an `InvalidTransition` error and leave the posting unchanged.
 - IF the same reporter fingerprint flags the same posting more than once THEN THE system
   SHALL count it as a single flag.
+- IF a repost is attempted without a valid manage token for the source posting THEN THE
+  system SHALL reject it.
 
 ### 5.5 Optional Features
 
@@ -205,16 +210,22 @@ This feature is complete when:
 
 ---
 
-## 9. Open Questions
+## 9. Resolved Decisions
 
-To resolve during the clarify pass, before `plan.md`:
+Resolved during the clarify pass, before `plan.md`:
 
-1. Should `lifetime_days` vary by Site as well as Category? Real Craigslist uses shorter
-   lifetimes in dense markets. Per-Category only is simpler; per-Site-and-Category is
-   more faithful.
-2. Is the flag threshold global, or per Category? Per Category allows tuning noisy
-   sections but adds configuration surface.
-3. Should `EXPIRED` postings remain reachable at their canonical URL, as real Craigslist
-   does for a period? This affects whether "publicly visible" and "publicly reachable"
-   are the same queryset.
-4. Should `reposted_from` be enforced as same-poster, or left as a loose provenance hint?
+1. **`lifetime_days` is per-Category only**, with no Site dimension. Simpler and matches
+   the project's boring-is-correct bias; real Craigslist's per-market variation isn't a
+   demonstrated need here. Adding a Site override later is cheap (additive override plus
+   a resolver method) if that changes.
+2. **The flag threshold is global**, not per-Category. One configured value is simplest;
+   a per-Category override can be added later as a nullable field with fallback to the
+   global default without breaking existing data.
+3. **`EXPIRED` postings are not publicly reachable at their canonical URL.** "Publicly
+   visible" and "publicly reachable" are the same queryset, preserving the single
+   canonical queryset commitment in §5.1. This does not affect poster-side access, which
+   goes through the manage token rather than the public URL.
+4. **`reposted_from` is enforced as same-poster**, via possession of the source
+   posting's manage token — consistent with how delete and renew are already authorized
+   in this account-less model. This closes an easy provenance-spoofing vector at
+   near-zero implementation cost.
