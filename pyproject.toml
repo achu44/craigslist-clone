@@ -18,3 +18,17 @@ dev = [
     "pytest-django>=4.12.0",
     "ruff>=0.16.0",
 ]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+# RUF012 flags Meta.ordering/unique_together and ModelAdmin.list_display/search_fields
+# as "mutable class defaults" — these are standard Django idioms, not bugs.
+ignore = ["RUF012"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
