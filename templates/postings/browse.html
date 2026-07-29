@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Browse {{ site.name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ site.name }}</h1>
+  <p><a href="{% url 'postings:create' site.slug %}">Post something</a></p>
+
+  <form method="get">
+    <label for="category">Category</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+      <option value="">All categories</option>
+      {% for category in categories %}
+        <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>
+          {{ category.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <ul class="posting-list">
+    {% for posting in postings %}
+      <li>
+        <a href="{% url 'postings:detail' site.slug posting.public_id %}">{{ posting.title }}</a>
+        {% if posting.price is not None %}<span class="price">${{ posting.price }}</span>{% endif %}
+      </li>
+    {% empty %}
+      <li>No postings yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,59 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+main {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.posting-list {
+  list-style: none;
+  padding: 0;
+}
+
+.posting-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.posting-list .price {
+  color: #444;
+  margin-left: 0.5rem;
+}
+
+.field-error {
+  color: #b00020;
+  font-size: 0.9rem;
+}
+
+.messages {
+  list-style: none;
+  padding: 0;
+}
+
+.messages .error {
+  color: #b00020;
+}
+
+form p {
+  margin: 0.75rem 0;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Post to {{ site.name }}{% endblock %}
+
+{% block content %}
+  <h1>Post to {{ site.name }}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <p class="field-error">{{ form.non_field_errors|join:", " }}</p>
+    {% endif %}
+    {% for field in form %}
+      {% if field.name == "price" %}
+        <div id="price-field-wrapper">
+          <p>
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}<span class="field-error">{{ field.errors|join:", " }}</span>{% endif %}
+          </p>
+        </div>
+      {% else %}
+        <p>
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}<span class="field-error">{{ field.errors|join:", " }}</span>{% endif %}
+        </p>
+      {% endif %}
+    {% endfor %}
+    <button type="submit">Post</button>
+  </form>
+{% endblock %}

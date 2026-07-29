@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ posting.title }}{% endblock %}
+
+{% block content %}
+  <p><a href="{% url 'postings:browse' site.slug %}">&larr; Back to browse</a></p>
+  <h1>{{ posting.title }}</h1>
+  {% if posting.price is not None %}<p class="price">${{ posting.price }}</p>{% endif %}
+  <p>{{ posting.body|linebreaks }}</p>
+  <h2>Contact</h2>
+  <p>{{ posting.contact_email }}</p>
+  {% if posting.show_phone and posting.contact_phone %}<p>{{ posting.contact_phone }}</p>{% endif %}
+{% endblock %}

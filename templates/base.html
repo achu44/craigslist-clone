@@ -1,0 +1,25 @@
+{% load static %}<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Craigslist Clone{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <script src="{% static 'django_htmx/htmx-2.min.js' %}" defer></script>
+  </head>
+  <body>
+    <header>
+      <strong>Craigslist Clone</strong>
+    </header>
+    <main>
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

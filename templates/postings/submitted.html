@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm your posting{% endblock %}
+
+{% block content %}
+  <h1>Almost there</h1>
+  <p>
+    Check your email to confirm your posting. Since this project doesn't send real email
+    yet, here's the confirm link directly:
+  </p>
+  <p>
+    <a href="{% url 'postings:confirm' site.slug posting.public_id token %}">Confirm now</a>
+  </p>
+  <p>
+    Save this link to manage your posting later:
+    <a href="{% url 'postings:manage' site.slug posting.public_id token %}">Manage posting</a>
+  </p>
+{% endblock %}
