@@ -65,7 +65,9 @@ def normalize_query(raw: str | None) -> str:
 def search_postings(postings: QuerySet, term: str) -> QuerySet:
     if not term:
         return postings
-    vector = SearchVector("title", "body", config=SEARCH_CONFIG)
+    vector = SearchVector("title", weight="A", config=SEARCH_CONFIG) + SearchVector(
+        "body", weight="B", config=SEARCH_CONFIG
+    )
     query = SearchQuery(term, config=SEARCH_CONFIG, search_type="plain")
     return (
         postings.annotate(search=vector, rank=SearchRank(vector, query))
@@ -74,8 +76,17 @@ def search_postings(postings: QuerySet, term: str) -> QuerySet:
     )
 ```
 
-Three decisions worth stating, because each maps onto a requirement:
+Four decisions worth stating, because each maps onto a requirement:
 
+- **Weighted vector (`title` = A, `body` = B).** *Amended during implementation, with user
+  approval.* This section originally specified a single unweighted
+  `SearchVector("title", "body")`, which contradicted tasks.md T006's requirement that a
+  title match outrank a body-only match: one unweighted vector puts both fields at
+  PostgreSQL's default weight `D`, scoring them identically. Measured for the term
+  `couch`, unweighted gave title `0.060793` and body `0.060793` — a tie, leaving the
+  `-published_at` fallback to decide relevance order. Weighted gives title `0.607927` and
+  body `0.243171`. Adding the weights costs nothing: same single query, still no
+  migration, still no dependency.
 - **`search_type="plain"`** routes through `plainto_tsquery`, which treats `&`, `|`, `!`
   and parentheses as ordinary words rather than operators. That is what satisfies spec
   §4.4's "no 500 on operator characters" without any escaping code of our own. Do not

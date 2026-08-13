@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.geo.models import Site
+from apps.search.services import normalize_query, search_postings
 from apps.taxonomy.models import Category
 
 from .exceptions import (
@@ -38,6 +39,8 @@ def browse(request, site_slug):
     category_slug = request.GET.get("category")
     if category_slug:
         postings = postings.filter(category__slug=category_slug)
+    term = normalize_query(request.GET.get("q"))
+    postings = search_postings(postings, term)
     categories = Category.objects.filter(is_active=True)
     return render(
         request,
@@ -47,6 +50,7 @@ def browse(request, site_slug):
             "postings": postings,
             "categories": categories,
             "selected_category": category_slug,
+            "term": term,
         },
     )
 

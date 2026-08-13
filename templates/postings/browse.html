@@ -6,7 +6,14 @@
   <h1>{{ site.name }}</h1>
   <p><a href="{% url 'postings:create' site.slug %}">Post something</a></p>
 
+  {% comment %}
+    One form, so the search term and the category filter always submit together
+    and neither control clobbers the other (spec 003 §4.2).
+  {% endcomment %}
   <form method="get">
+    <label for="q">Search</label>
+    <input type="search" name="q" id="q" value="{{ term }}" placeholder="Search postings">
+
     <label for="category">Category</label>
     <select name="category" id="category" onchange="this.form.submit()">
       <option value="">All categories</option>
@@ -16,6 +23,8 @@
         </option>
       {% endfor %}
     </select>
+
+    <button type="submit">Search</button>
   </form>
 
   <ul class="posting-list">
@@ -25,7 +34,11 @@
         {% if posting.price is not None %}<span class="price">${{ posting.price }}</span>{% endif %}
       </li>
     {% empty %}
-      <li>No postings yet.</li>
+      {% if term %}
+        <li>No postings match "{{ term }}".</li>
+      {% else %}
+        <li>No postings yet.</li>
+      {% endif %}
     {% endfor %}
   </ul>
 {% endblock %}

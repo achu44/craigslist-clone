@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "apps.geo",
     "apps.taxonomy",
     "apps.postings",
+    "apps.search",
     "apps.moderation",
 ]
 
