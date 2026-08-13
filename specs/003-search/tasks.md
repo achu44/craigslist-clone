@@ -10,11 +10,11 @@ listed verification before moving to the next task. Cite this file
 
 ## Phase A — App Scaffolding
 
-- [ ] **T001** Create `apps/search/` with `__init__.py` and `apps.py`
+- [x] **T001** Create `apps/search/` with `__init__.py` and `apps.py`
   (`AppConfig.name = "apps.search"`). No `models.py`, no `migrations/` (plan.md §2).
   **Verify:** `uv run python manage.py check` runs without `ModuleNotFoundError`.
 
-- [ ] **T002** Add `"apps.search"` to `INSTALLED_APPS` in `config/settings.py`.
+- [x] **T002** Add `"apps.search"` to `INSTALLED_APPS` in `config/settings.py`.
   Do **not** add `django.contrib.postgres` (plan.md §6).
   **Verify:** `uv run python manage.py check` passes; `uv run python manage.py makemigrations --check`
   still reports no changes.
@@ -23,24 +23,24 @@ listed verification before moving to the next task. Cite this file
 
 ## Phase B — Search Service (plan.md §3)
 
-- [ ] **T003** `apps/search/services.py`: `normalize_query(raw)` — returns `""` for
+- [x] **T003** `apps/search/services.py`: `normalize_query(raw)` — returns `""` for
   `None`, empty, or whitespace-only input; strips surrounding whitespace; truncates to
   `MAX_QUERY_LENGTH = 200`.
   **Verify:** unit tests in `tests/search/test_services.py` for each of those four cases;
   no database needed.
 
-- [ ] **T004** `apps/search/services.py`: `search_postings(postings, term)` exactly as
+- [x] **T004** `apps/search/services.py`: `search_postings(postings, term)` exactly as
   specified in plan.md §3 — `SearchVector("title", "body")`, `SearchQuery(...,
   search_type="plain")`, `SearchRank`, ordered `-rank, -published_at`.
   **Verify:** test asserts a term matching a title returns that posting; a term matching
   only a body returns that posting; a term matching neither returns nothing.
 
-- [ ] **T005** `search_postings` returns its input queryset **unchanged** for an empty
+- [x] **T005** `search_postings` returns its input queryset **unchanged** for an empty
   term — no annotation, no re-ordering (plan.md §3, spec.md §4.3).
   **Verify:** test asserts `search_postings(qs, "") is qs` or that the two produce
   identical results in identical order.
 
-- [ ] **T006** Ranking: a posting matching in the title outranks one matching only in the
+- [x] **T006** Ranking: a posting matching in the title outranks one matching only in the
   body, and equal-rank results are tie-broken by `-published_at`.
   **Verify:** test builds three postings and asserts the exact result order; test asserts
   two equally-ranked postings come back newest-first on repeated evaluation.
@@ -51,16 +51,16 @@ listed verification before moving to the next task. Cite this file
 
 These are the tests that justify the feature; do not fold them into Phase B.
 
-- [ ] **T007** Search never returns a non-visible posting.
+- [x] **T007** Search never returns a non-visible posting.
   **Verify:** one test creating a posting in **each** of DRAFT, PENDING, EXPIRED, DELETED,
   HIDDEN and BLOCKED whose title is exactly the search term, asserting each is absent —
   six assertions, not one parametrized happy path.
 
-- [ ] **T008** Search never crosses a Site boundary.
+- [x] **T008** Search never crosses a Site boundary.
   **Verify:** test creates a matching ACTIVE posting on a second Site and asserts it is
   absent from the first Site's results.
 
-- [ ] **T009** Full-text operator characters are treated as literal text.
+- [x] **T009** Full-text operator characters are treated as literal text.
   **Verify:** test searches `desk & chair | !sofa` and `(unbalanced` and asserts a normal
   empty-or-matching result rather than a raised exception.
 
@@ -68,13 +68,13 @@ These are the tests that justify the feature; do not fold them into Phase B.
 
 ## Phase D — Browse Integration (plan.md §4)
 
-- [ ] **T010** `apps/postings/views.py`: `browse()` reads `?q=`, normalizes it, applies
+- [x] **T010** `apps/postings/views.py`: `browse()` reads `?q=`, normalizes it, applies
   `search_postings` after the site and category filters, and adds `term` to the context.
   **Verify:** test asserts `?q=` narrows results; test asserts `?q=` and `?category=`
   together apply both; test asserts an absent/blank `q` reproduces spec 002's browse
   ordering exactly.
 
-- [ ] **T011** `templates/postings/browse.html`: plain `GET` search form preserving the
+- [x] **T011** `templates/postings/browse.html`: plain `GET` search form preserving the
   selected category in a hidden field, echoing the submitted term back into the input, and
   a search-aware empty-results message (plan.md §5). No HTMX.
   **Verify:** test asserts the submitted term appears in the rendered input; test asserts
@@ -85,7 +85,7 @@ These are the tests that justify the feature; do not fold them into Phase B.
 
 ## Phase E — Acceptance Verification (spec.md §7)
 
-- [ ] **T012** Run the full suite and report status:
+- [x] **T012** Run the full suite and report status:
   - `uv run python manage.py check`
   - `uv run pytest`
   - `uv run pytest --cov=apps --cov-report=term-missing` (≥ 80% on `apps/`)
