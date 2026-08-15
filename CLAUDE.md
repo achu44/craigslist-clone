@@ -8,8 +8,9 @@ the conflict rather than silently resolving it.
 
 ## 1. Purpose and Context
 
-This is a functional clone of Craigslist, built as a learning vehicle for spec-driven
-development and agentic coding workflows. It is not a commercial product.
+This is a functional clone of Craigslist, built as a learning vehicle for agentic coding
+workflows. It is not a commercial product. Specs 001-003 were built with a hand-rolled
+spec-driven pipeline; from 2026-08-15 the project uses the skills flow described in §12.
 
 Two consequences follow from this and should shape every tradeoff:
 
@@ -74,7 +75,11 @@ new identifier). Conflating them is a domain error, not a naming preference.
 ├── CLAUDE.md                  # This file
 ├── README.md
 ├── pyproject.toml
-├── specs/
+├── CONTEXT.md                 # Domain glossary supplementing §3 (created lazily)
+├── docs/
+│   ├── agents/                # Issue tracker, triage labels, domain doc rules (§12)
+│   └── adr/                   # Architecture decision records (created lazily)
+├── specs/                     # FROZEN. Specs 001-003 only; see §4 notes below.
 │   └── NNN-feature-name/
 │       ├── spec.md            # What & why (EARS acceptance criteria)
 │       ├── plan.md            # How (architecture, schema, contracts)
@@ -91,9 +96,15 @@ new identifier). Conflating them is a domain error, not a naming preference.
 └── tests/
 ```
 
-- The system shall place each feature's specs in `specs/NNN-feature-name/` with a
-  zero-padded three-digit prefix.
-- The system shall never mix two features into one spec directory.
+- The system shall record specs as GitHub issues, not as files (§12,
+  `docs/agents/issue-tracker.md`).
+- `specs/001-domain-model/`, `002-posting-lifecycle/` and `003-search/` are **frozen
+  history**. They document work already shipped and remain valid primary sources to read.
+  The system shall not add a new `specs/NNN-*/` directory and shall not edit an existing
+  one.
+- `CONTEXT.md` and `docs/adr/` are created lazily by `/domain-modeling` when a term or a
+  hard-to-reverse decision actually needs recording. The system shall not scaffold them
+  pre-emptively.
 
 ---
 
@@ -166,8 +177,9 @@ This repository is public. Treat every commit as permanently published.
 ## 9. Git and Traceability
 
 - The system shall use Conventional Commits: `feat(postings): add expiry transition`.
-- WHEN a commit implements spec'd work THE system SHALL cite the spec in the commit
-  body: `refs specs/001-domain-model/spec.md`.
+- WHEN a commit implements a tracked issue THE system SHALL cite it in the commit body:
+  `refs #14`. WHERE the work predates the issue tracker, cite the frozen spec instead:
+  `refs specs/001-domain-model/spec.md`.
 - The system shall not commit unless the test suite passes.
 - The system shall never run `git push --force`, `git reset --hard`, or `git rebase`
   without explicit confirmation in the current session.
@@ -176,21 +188,27 @@ This repository is public. Treat every commit as permanently published.
 
 ## 10. Rules for AI Agents
 
+Process lives in the skills (§12), not here. What remains are the rules the skills do not
+supply.
+
 - IF a requirement is ambiguous THEN THE system SHALL ask for clarification before
   implementing. Guessing and noting the guess is not an acceptable substitute.
-- WHEN a task touches more than two files THE system SHALL present a plan and wait for
-  approval before editing.
-- The system shall implement exactly what the current task specifies. IF an adjacent
+- The system shall implement exactly what the current issue specifies. IF an adjacent
   improvement seems warranted THEN THE system SHALL note it and move on rather than
   implementing it unasked.
-- IF implementing a task reveals that the spec is wrong or incomplete THEN THE system
-  SHALL stop, report the gap, and propose a spec amendment. The system shall not
-  silently implement behavior that contradicts the spec.
+- IF implementing an issue reveals that the issue is wrong or incomplete THEN THE system
+  SHALL stop, report the gap, and propose an amendment as a comment on that issue. The
+  system shall not silently implement behavior that contradicts the issue.
 - The system shall not create files outside the layout in §4 without stating why.
-- The system shall not modify `CLAUDE.md` or any file under `specs/` as a side effect of
-  an implementation task.
+- The system shall not modify `CLAUDE.md`, `CONTEXT.md`, `docs/adr/`, or any file under
+  `specs/` as a side effect of an implementation task.
 - WHEN reporting completion THE system SHALL state which acceptance criteria it verified
   and which it did not.
+
+Deliberately **removed** when this project adopted the skills: a rule requiring a plan and
+explicit approval before any change touching more than two files. `/implement` drives a
+whole ticket through `/tdd` in one pass; that rule turned it into a permission treadmill.
+Scope is now bounded by the ticket, not by a file count.
 
 ---
 
@@ -206,3 +224,22 @@ scope unless this section is amended:
 - Multi-tenancy beyond the Site model
 - Recommendation or ranking algorithms beyond deterministic sort and text relevance
 - Microservices; this is one Django project and shall remain one
+
+---
+
+## 12. Agent Skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues (`achu44/craigslist-clone`), via the `gh` CLI.
+See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles, each label string equal to its name.
+See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` and `docs/adr/` at the repo root. §3 of this file is the
+binding glossary. See `docs/agents/domain.md`.
